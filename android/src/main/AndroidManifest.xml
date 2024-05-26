@@ -1,0 +1,10 @@
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+  package="dev.almasum.ibeacon_scanner_background">
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE_DATA_SYNC" />
+    <application>
+        <service
+            android:name=".IBeaconScannerService"
+            android:exported="false" />
+    </application>
+</manifest>
