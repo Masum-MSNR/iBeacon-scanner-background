@@ -108,12 +108,13 @@ class IbeaconScannerBackgroundPlugin : FlutterPlugin, MethodCallHandler,
         }
         channel.setMethodCallHandler(this)
         MyNotification.createNotificationChannels(context)
-        currentStatus = MutableLiveData("Inactive")
+        currentStatus = MutableLiveData()
         currentStatus!!.observeForever {
             if (eventSink != null) {
                 eventSink!!.success(it)
             }
         }
+        currentStatus!!.value = "Inactive"
     }
 
     override fun onMethodCall(call: MethodCall, result: Result) {

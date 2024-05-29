@@ -210,6 +210,9 @@ class IBeaconScannerService : Service() {
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
         if (intent != null) {
             if (intent.action.equals("START")) {
+                if (currentStatus != null) {
+                    currentStatus!!.value = "Scanning"
+                }
                 startForeground(
                     MyNotification.NOTIFICATION_ID,
                     MyNotification.createNotification(
@@ -244,9 +247,6 @@ class IBeaconScannerService : Service() {
                             .setScanMode(ScanSettings.SCAN_MODE_BALANCED)
                             .build()
                     btScanner!!.startScan(filters, scanSetting, leScanCallback)
-                    if (currentStatus != null) {
-                        currentStatus!!.value = "Scanning"
-                    }
                     if (!apiCallRunning) {
                         apiCallRunning = true
                         RemoteHelper.updatePeriodic(applicationContext)
