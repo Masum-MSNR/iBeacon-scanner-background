@@ -106,6 +106,8 @@ class IbeaconScannerBackgroundPlugin : FlutterPlugin, MethodCallHandler,
     }
 
     override fun onMethodCall(call: MethodCall, result: Result) {
+        Log.d("MSNRSP", "call.method")
+
         if (call.method == "start_scan") {
             val serviceIntent = Intent(context, IBeaconScannerService::class.java)
             serviceIntent.action = "START"
@@ -119,15 +121,15 @@ class IbeaconScannerBackgroundPlugin : FlutterPlugin, MethodCallHandler,
         } else if (call.method == "save_token") {
             try {
                 val token = call.argument<String>("token")
+                Log.d("MSNRSP", "Token: $token")
                 val prefEditor =
                     context.getSharedPreferences("inv_app", Context.MODE_PRIVATE).edit()
                 prefEditor.putString("token", token)
-                Log.d("MSNR", "Token: $token")
                 prefEditor.apply()
                 result.success(true)
             } catch (e: Exception) {
                 result.success(false)
-                Log.e("MSNR", e.message!!)
+                Log.e("MSNRSP", e.message!!)
             }
         } else {
             result.notImplemented()
