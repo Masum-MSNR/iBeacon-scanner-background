@@ -1,5 +1,3 @@
-import 'package:ibeacon_scanner_background/ibeacon.dart';
-
 import 'ibeacon_scanner_background_platform_interface.dart';
 
 class IbeaconScannerBackground {
@@ -9,6 +7,10 @@ class IbeaconScannerBackground {
 
   Future<bool?> stopScan() {
     return IbeaconScannerBackgroundPlatform.instance.stopScan();
+  }
+
+  Future<bool?> saveToken(String token) {
+    return IbeaconScannerBackgroundPlatform.instance.saveToken(token);
   }
 
   Stream<dynamic> get ibeaconStream {

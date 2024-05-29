@@ -1,8 +1,5 @@
-import 'dart:convert';
-
 import 'package:flutter/foundation.dart';
 import 'package:flutter/services.dart';
-import 'package:ibeacon_scanner_background/ibeacon.dart';
 
 import 'ibeacon_scanner_background_platform_interface.dart';
 
@@ -23,6 +20,12 @@ class MethodChannelIbeaconScannerBackground
   @override
   Future<bool?> stopScan() async {
     final res = await methodChannel.invokeMethod<bool>('stop_scan');
+    return res;
+  }
+
+  @override
+  Future<bool?> saveToken(String token) async {
+    final res = await methodChannel.invokeMethod<bool>('save_token', token);
     return res;
   }
 

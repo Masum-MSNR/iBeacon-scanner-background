@@ -123,10 +123,17 @@ class IbeaconScannerBackgroundPlugin : FlutterPlugin, MethodCallHandler,
             context.startForegroundService(serviceIntent)
             result.success(true)
         } else if (call.method == "save_token") {
-            val token = call.argument<String>("token")
-            val prefEditor = context.getSharedPreferences("inv_app", Context.MODE_PRIVATE).edit()
-            prefEditor.putString("token", token)
-            prefEditor.apply()
+            try {
+                val token = call.argument<String>("token")
+                val prefEditor =
+                    context.getSharedPreferences("inv_app", Context.MODE_PRIVATE).edit()
+                prefEditor.putString("token", token)
+                prefEditor.apply()
+                result.success(true)
+            } catch (e: Exception) {
+                result.success(false)
+                Log.e("MSNR", e.message!!)
+            }
         } else {
             result.notImplemented()
         }

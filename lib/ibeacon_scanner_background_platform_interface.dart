@@ -33,6 +33,10 @@ abstract class IbeaconScannerBackgroundPlatform extends PlatformInterface {
     throw UnimplementedError('stopScan() has not been implemented.');
   }
 
+  Future<bool?> saveToken(String token) {
+    throw UnimplementedError('saveToken() has not been implemented.');
+  }
+
   Stream<dynamic> get iBeaconStream {
     throw UnimplementedError('iBeaconStream has not been implemented.');
   }
