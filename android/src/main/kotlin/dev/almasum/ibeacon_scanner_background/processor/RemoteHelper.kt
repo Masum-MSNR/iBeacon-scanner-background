@@ -36,6 +36,7 @@ object RemoteHelper {
                     Log.d("RemoteHelper", toUpload.toString())
                     beaconDao.setUploaded(toUpload.mac)
                 }
+                updatePeriodic(context)
             } catch (e: Exception) {
                 Log.e("RemoteHelper", e.message!!)
             }

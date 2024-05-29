@@ -6,6 +6,7 @@ import android.content.Context
 import android.content.Intent
 import android.content.IntentFilter
 import android.util.Log
+import androidx.lifecycle.MutableLiveData
 import dev.almasum.ibeacon_scanner_background.ibeacon.BeaconModel
 import dev.almasum.ibeacon_scanner_background.ibeacon.IBeaconScannerService
 import dev.almasum.ibeacon_scanner_background.utils.MyNotification
@@ -22,10 +23,11 @@ import io.flutter.plugin.common.MethodChannel.Result
 /** IbeaconScannerBackgroundPlugin */
 class IbeaconScannerBackgroundPlugin : FlutterPlugin, MethodCallHandler,
     ActivityAware, EventChannel.StreamHandler {
-    /// The MethodChannel that will the communication between Flutter and native Android
-    ///
-    /// This local reference serves to register the plugin with the Flutter Engine and unregister it
-    /// when the Flutter Engine is detached from the Activity
+
+    companion object {
+        var currentStatus: MutableLiveData<String>? = null
+    }
+
     private lateinit var channel: MethodChannel
     private lateinit var streamChannle: EventChannel
     private lateinit var context: Context
@@ -101,6 +103,12 @@ class IbeaconScannerBackgroundPlugin : FlutterPlugin, MethodCallHandler,
         context.registerReceiver(broadcastReceiver, intentFilter)
         channel.setMethodCallHandler(this)
         MyNotification.createNotificationChannels(context)
+        currentStatus = MutableLiveData("Inactive")
+        currentStatus!!.observeForever {
+            if (eventSink != null) {
+                eventSink!!.success(it)
+            }
+        }
     }
 
     override fun onMethodCall(call: MethodCall, result: Result) {
@@ -114,8 +122,12 @@ class IbeaconScannerBackgroundPlugin : FlutterPlugin, MethodCallHandler,
             serviceIntent.action = "STOP"
             context.startForegroundService(serviceIntent)
             result.success(true)
+        } else if (call.method == "save_token") {
+            val token = call.argument<String>("token")
+            val prefEditor = context.getSharedPreferences("inv_app", Context.MODE_PRIVATE).edit()
+            prefEditor.putString("token", token)
+            prefEditor.apply()
         } else {
-            Log.d("MSNR", "Method not implemented")
             result.notImplemented()
         }
     }

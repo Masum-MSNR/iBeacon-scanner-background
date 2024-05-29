@@ -19,6 +19,7 @@ import com.google.android.gms.location.LocationRequest
 import com.google.android.gms.location.LocationResult
 import com.google.android.gms.location.LocationServices
 import com.google.android.gms.location.Priority
+import dev.almasum.ibeacon_scanner_background.IbeaconScannerBackgroundPlugin.Companion.currentStatus
 import dev.almasum.ibeacon_scanner_background.processor.LocalHelper
 import dev.almasum.ibeacon_scanner_background.processor.RemoteHelper
 import dev.almasum.ibeacon_scanner_background.utils.MyNotification
@@ -182,6 +183,7 @@ class IBeaconScannerService : Service() {
         }
 
         override fun onScanFailed(errorCode: Int) {
+            currentStatus!!.value = "Inactive"
             Log.e("MSNR", errorCode.toString())
         }
     }
@@ -238,10 +240,16 @@ class IBeaconScannerService : Service() {
                             .setScanMode(ScanSettings.SCAN_MODE_BALANCED)
                             .build()
                     btScanner!!.startScan(filters, scanSetting, leScanCallback)
+                    if (currentStatus != null) {
+                        currentStatus!!.value = "Scanning"
+                    }
                     RemoteHelper.updatePeriodic(applicationContext)
                 }
                 listenLocation()
             } else if (intent.action.equals("STOP")) {
+                if (currentStatus != null) {
+                    currentStatus!!.value = "Inactive"
+                }
                 btScanner =
                     (applicationContext?.getSystemService(Context.BLUETOOTH_SERVICE) as BluetoothManager).adapter!!.bluetoothLeScanner
                 btScanner!!.stopScan(leScanCallback)
