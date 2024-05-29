@@ -103,12 +103,6 @@ class IbeaconScannerBackgroundPlugin : FlutterPlugin, MethodCallHandler,
         context.registerReceiver(broadcastReceiver, intentFilter)
         channel.setMethodCallHandler(this)
         MyNotification.createNotificationChannels(context)
-        currentStatus = MutableLiveData("Inactive")
-        currentStatus!!.observeForever {
-            if (eventSink != null) {
-                eventSink!!.success(it)
-            }
-        }
     }
 
     override fun onMethodCall(call: MethodCall, result: Result) {
@@ -128,6 +122,7 @@ class IbeaconScannerBackgroundPlugin : FlutterPlugin, MethodCallHandler,
                 val prefEditor =
                     context.getSharedPreferences("inv_app", Context.MODE_PRIVATE).edit()
                 prefEditor.putString("token", token)
+                Log.d("MSNR", "Token: $token")
                 prefEditor.apply()
                 result.success(true)
             } catch (e: Exception) {
@@ -159,6 +154,12 @@ class IbeaconScannerBackgroundPlugin : FlutterPlugin, MethodCallHandler,
 
     override fun onListen(arguments: Any?, eventSink: EventChannel.EventSink?) {
         this.eventSink = eventSink
+        currentStatus = MutableLiveData("Inactive")
+        currentStatus!!.observeForever {
+            if (eventSink != null) {
+                eventSink!!.success(it)
+            }
+        }
     }
 
     override fun onCancel(arguments: Any?) {

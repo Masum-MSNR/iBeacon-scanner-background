@@ -21,15 +21,18 @@ object RemoteHelper {
             val prefs = context.getSharedPreferences("inv_app", Context.MODE_PRIVATE)
 
             try {
+                val requestBody = RequestBody(
+                    action = "upload_data",
+                    token = prefs.getString("token", "")!!,
+                    timestamp = Tools.convertTimestampToString(toUpload.timestamp),
+                    latitude = toUpload.latitude.toString(),
+                    longitude = toUpload.longitude.toString(),
+                    uuid = toUpload.uuid
+                )
+
+                Log.d("RemoteHelper", requestBody.toString())
                 val response = WebService.create().postBeacon(
-                    RequestBody(
-                        action = "upload_data",
-                        token = prefs.getString("token", "")!!,
-                        timestamp = Tools.convertTimestampToString(toUpload.timestamp),
-                        latitude = toUpload.latitude.toString(),
-                        longitude = toUpload.longitude.toString(),
-                        uuid = toUpload.uuid
-                    )
+                    requestBody
                 )
 
                 if (response.asJsonObject["result"].toString() == "ok") {

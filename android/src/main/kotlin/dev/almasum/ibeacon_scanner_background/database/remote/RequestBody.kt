@@ -9,4 +9,8 @@ data class RequestBody(
     @Field("latitude") val latitude: String,
     @Field("longitude") val longitude: String,
     @Field("uuid") val uuid: String
-)
+){
+    override fun toString(): String {
+        return "RequestBody(action='$action', token='$token', timestamp='$timestamp', latitude='$latitude', longitude='$longitude', uuid='$uuid')"
+    }
+}
