@@ -35,10 +35,10 @@ object RemoteHelper {
                     requestBody
                 )
 
-                Log.d("RemoteHelper", response.asJsonObject.toString())
+                Log.d("RemoteHelper22", response.asJsonObject.get("result"))
 
                 if (response.asJsonObject.get("result").toString() == "ok") {
-                    Log.d("RemoteHelper", toUpload.toString())
+                    Log.d("RemoteHelper22", toUpload.toString())
                     beaconDao.setUploaded(toUpload.mac)
                 }
                 updatePeriodic(context)
