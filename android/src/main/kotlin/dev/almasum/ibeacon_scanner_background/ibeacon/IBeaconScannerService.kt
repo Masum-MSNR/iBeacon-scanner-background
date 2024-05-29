@@ -93,6 +93,9 @@ class IBeaconScannerService : Service() {
 
         @SuppressLint("MissingPermission")
         override fun onScanResult(callbackType: Int, result: ScanResult) {
+            if (currentStatus != null) {
+                currentStatus!!.value = "Scanning"
+            }
             val scanRecord = result.scanRecord
             val beaconModel = BeaconModel(result.device.address)
             beaconModel.manufacturer = result.device.name
@@ -187,7 +190,9 @@ class IBeaconScannerService : Service() {
         }
 
         override fun onScanFailed(errorCode: Int) {
-            currentStatus!!.value = "Inactive"
+            if (currentStatus != null) {
+                currentStatus!!.value = "Inactive"
+            }
             Log.e("MSNR", errorCode.toString())
         }
     }
@@ -210,9 +215,6 @@ class IBeaconScannerService : Service() {
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
         if (intent != null) {
             if (intent.action.equals("START")) {
-                if (currentStatus != null) {
-                    currentStatus!!.value = "Scanning"
-                }
                 startForeground(
                     MyNotification.NOTIFICATION_ID,
                     MyNotification.createNotification(
@@ -227,6 +229,9 @@ class IBeaconScannerService : Service() {
                     (applicationContext?.getSystemService(Context.BLUETOOTH_SERVICE) as BluetoothManager).adapter!!
                 btScanner = bluetoothAdapter.bluetoothLeScanner
                 startRepeatingFunction {
+                    if (currentStatus != null) {
+                        currentStatus!!.value = "Scanning"
+                    }
                     if (!bluetoothAdapter.isEnabled) {
                         MyNotification.showNotification(
                             applicationContext,
