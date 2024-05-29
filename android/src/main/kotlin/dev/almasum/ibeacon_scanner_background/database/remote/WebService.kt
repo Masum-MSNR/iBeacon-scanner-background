@@ -39,6 +39,18 @@ interface WebService {
             return GsonConverterFactory.create(gsonBuilder.create())
         }
 
+//        OkHttpClient.Builder clientBuilder = new OkHttpClient.Builder();
+//        HttpLoggingInterceptor loggingInterceptor = new HttpLoggingInterceptor();
+//        loggingInterceptor.setLevel(HttpLoggingInterceptor.Level.BODY);
+//        clientBuilder.addInterceptor(loggingInterceptor);
+//
+//        Retrofit retrofit = new Retrofit.Builder()
+//        .baseUrl(NetworkCalls.BASE_URL)
+//        .client(clientBuilder.build())
+//        .addCallAdapterFactory(RxJavaCallAdapterFactory.create())
+//        .addConverterFactory(GsonConverterFactory.create())
+//        .build();
+
         private var httpUrl = HttpUrl.Builder()
             .scheme("https")
             .host("trcom.com.ar")
@@ -48,7 +60,7 @@ interface WebService {
         private fun create(httpUrl: HttpUrl): WebService {
             val client = OkHttpClient.Builder()
                 .addInterceptor(HttpLoggingInterceptor().apply {
-                    this.level = HttpLoggingInterceptor.Level.BASIC
+                    this.level = HttpLoggingInterceptor.Level.BODY
                 })
                 .build()
             return Retrofit.Builder()
