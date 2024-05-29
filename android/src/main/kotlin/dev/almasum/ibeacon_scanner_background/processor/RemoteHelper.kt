@@ -37,7 +37,7 @@ object RemoteHelper {
 
                 Log.d("RemoteHelper", response.asJsonObject.toString())
 
-                if ((response.asJsonObject)["result"].toString() == "ok") {
+                if (response.asJsonObject.get("result").toString() == "ok") {
                     Log.d("RemoteHelper", toUpload.toString())
                     beaconDao.setUploaded(toUpload.mac)
                 }
