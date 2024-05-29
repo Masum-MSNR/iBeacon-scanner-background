@@ -25,7 +25,8 @@ class MethodChannelIbeaconScannerBackground
 
   @override
   Future<bool?> saveToken(String token) async {
-    final res = await methodChannel.invokeMethod<bool>('save_token', token);
+    final res =
+        await methodChannel.invokeMethod<bool>('save_token', {'token': token});
     return res;
   }
 
