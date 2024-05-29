@@ -35,7 +35,7 @@ object RemoteHelper {
                     requestBody
                 )
 
-                Log.d("RemoteHelper22", response.asJsonObject.get("result"))
+                Log.d("RemoteHelper22", response.asJsonObject.get("result").toString())
 
                 if (response.asJsonObject.get("result").toString() == "ok") {
                     Log.d("RemoteHelper22", toUpload.toString())

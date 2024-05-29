@@ -1,6 +1,6 @@
 name: ibeacon_scanner_background
 description: "A new Flutter project."
-version: 0.0.11
+version: 0.0.12
 homepage:
 
 environment:
