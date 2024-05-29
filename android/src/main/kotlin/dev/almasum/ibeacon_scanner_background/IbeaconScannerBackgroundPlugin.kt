@@ -5,6 +5,7 @@ import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
 import android.content.IntentFilter
+import android.os.Build
 import android.util.Log
 import androidx.lifecycle.MutableLiveData
 import dev.almasum.ibeacon_scanner_background.ibeacon.BeaconModel
@@ -64,7 +65,7 @@ class IbeaconScannerBackgroundPlugin : FlutterPlugin, MethodCallHandler,
 
         val type = typeRegex.find(json)?.groups?.get(1)?.value
         val mac = macRegex.find(json)?.groups?.get(1)?.value
-        var rssi = rssiRegex.find(json)?.groups?.get(1)?.value
+        val rssi = rssiRegex.find(json)?.groups?.get(1)?.value
         val uuid = uuidRegex.find(json)?.groups?.get(1)?.value
         val major = majorRegex.find(json)?.groups?.get(1)?.value
         val minor = minorRegex.find(json)?.groups?.get(1)?.value
@@ -100,14 +101,22 @@ class IbeaconScannerBackgroundPlugin : FlutterPlugin, MethodCallHandler,
         streamChannle.setStreamHandler(this)
         context = flutterPluginBinding.applicationContext
         broadcastReceiver = DataBroadcastReceiver()
-        context.registerReceiver(broadcastReceiver, intentFilter)
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+            context.registerReceiver(broadcastReceiver, intentFilter, Context.RECEIVER_NOT_EXPORTED)
+        } else {
+            context.registerReceiver(broadcastReceiver, intentFilter)
+        }
         channel.setMethodCallHandler(this)
         MyNotification.createNotificationChannels(context)
+        currentStatus = MutableLiveData("Inactive")
+        currentStatus!!.observeForever {
+            if (eventSink != null) {
+                eventSink!!.success(it)
+            }
+        }
     }
 
     override fun onMethodCall(call: MethodCall, result: Result) {
-        Log.d("MSNRSP", call.method)
-
         if (call.method == "start_scan") {
             val serviceIntent = Intent(context, IBeaconScannerService::class.java)
             serviceIntent.action = "START"
@@ -121,7 +130,6 @@ class IbeaconScannerBackgroundPlugin : FlutterPlugin, MethodCallHandler,
         } else if (call.method == "save_token") {
             try {
                 val token = call.argument<String>("token")
-                Log.d("MSNRSP", "Token: $token")
                 val prefEditor =
                     context.getSharedPreferences("inv_app", Context.MODE_PRIVATE).edit()
                 prefEditor.putString("token", token)
@@ -129,7 +137,6 @@ class IbeaconScannerBackgroundPlugin : FlutterPlugin, MethodCallHandler,
                 result.success(true)
             } catch (e: Exception) {
                 result.success(false)
-                Log.e("MSNRSP", e.message!!)
             }
         } else {
             result.notImplemented()
@@ -156,12 +163,6 @@ class IbeaconScannerBackgroundPlugin : FlutterPlugin, MethodCallHandler,
 
     override fun onListen(arguments: Any?, eventSink: EventChannel.EventSink?) {
         this.eventSink = eventSink
-        currentStatus = MutableLiveData("Inactive")
-        currentStatus!!.observeForever {
-            if (eventSink != null) {
-                eventSink!!.success(it)
-            }
-        }
     }
 
     override fun onCancel(arguments: Any?) {

@@ -42,6 +42,10 @@ class IBeaconScannerService : Service() {
     private var latitude: Double = 0.0
     private var longitude: Double = 0.0
 
+    companion object {
+        var apiCallRunning = false
+    }
+
 
     private val mLocationRequest: LocationRequest =
         LocationRequest.Builder(Priority.PRIORITY_HIGH_ACCURACY, 5000)
@@ -243,7 +247,10 @@ class IBeaconScannerService : Service() {
                     if (currentStatus != null) {
                         currentStatus!!.value = "Scanning"
                     }
-                    RemoteHelper.updatePeriodic(applicationContext)
+                    if (!apiCallRunning) {
+                        apiCallRunning = true
+                        RemoteHelper.updatePeriodic(applicationContext)
+                    }
                 }
                 listenLocation()
             } else if (intent.action.equals("STOP")) {

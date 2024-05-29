@@ -8,9 +8,9 @@ import android.content.Context
 class MyNotification {
     companion object {
         const val NOTIFICATION_ID = 101
-        private const val SERVICE_CHANNEL_ID = "dev.almasum.ibeacon_scanner_background"
+        private const val SERVICE_CHANNEL_ID = "inv_app_ibeacon"
         private const val SERVICE_CHANNEL_NAME = "iBeacon Scanner"
-        private const val REGULAR_CHANNEL_ID = "dev.almasum.ibeacon_scanner_background.notifier"
+        private const val REGULAR_CHANNEL_ID = "inv_app_ibeacon.notifier"
         private const val REGULAR_CHANNEL_NAME = "Notifier"
 
         fun createNotificationChannels(context: Context) {
