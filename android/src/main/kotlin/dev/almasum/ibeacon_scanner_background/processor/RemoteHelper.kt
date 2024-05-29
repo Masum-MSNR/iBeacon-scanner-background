@@ -48,6 +48,7 @@ object RemoteHelper {
             } catch (e: Exception) {
                 apiCallRunning = false
                 Log.e("RemoteHelper", e.message!!)
+                e.printStackTrace()
             }
         }
     }
