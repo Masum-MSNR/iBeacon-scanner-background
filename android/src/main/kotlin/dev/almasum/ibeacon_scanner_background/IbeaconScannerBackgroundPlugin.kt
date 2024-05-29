@@ -106,7 +106,7 @@ class IbeaconScannerBackgroundPlugin : FlutterPlugin, MethodCallHandler,
     }
 
     override fun onMethodCall(call: MethodCall, result: Result) {
-        Log.d("MSNRSP", "call.method")
+        Log.d("MSNRSP", call.method)
 
         if (call.method == "start_scan") {
             val serviceIntent = Intent(context, IBeaconScannerService::class.java)
