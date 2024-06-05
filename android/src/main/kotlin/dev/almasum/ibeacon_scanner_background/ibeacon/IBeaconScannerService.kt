@@ -211,6 +211,13 @@ class IBeaconScannerService : Service() {
         }
     }
 
+    private fun refreshList() {
+        Intent().run {
+            action = "dev.almasum.ibeacon_scanner_background.REFRESH"
+            applicationContext.sendBroadcast(this)
+        }
+    }
+
     @SuppressLint("MissingPermission", "ForegroundServiceType")
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
         if (intent != null) {
@@ -229,6 +236,7 @@ class IBeaconScannerService : Service() {
                     (applicationContext?.getSystemService(Context.BLUETOOTH_SERVICE) as BluetoothManager).adapter!!
                 btScanner = bluetoothAdapter.bluetoothLeScanner
                 startRepeatingFunction {
+                    refreshList()
                     if (currentStatus != null) {
                         currentStatus!!.value = "Scanning"
                     }

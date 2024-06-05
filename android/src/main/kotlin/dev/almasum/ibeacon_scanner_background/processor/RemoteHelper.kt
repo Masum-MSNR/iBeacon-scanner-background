@@ -2,7 +2,6 @@ package dev.almasum.ibeacon_scanner_background.processor
 
 import android.content.Context
 import android.util.Log
-import dev.almasum.ibeacon_scanner_background.database.local.DatabaseClient
 import dev.almasum.ibeacon_scanner_background.database.remote.RequestBody
 import dev.almasum.ibeacon_scanner_background.database.remote.WebService
 import dev.almasum.ibeacon_scanner_background.ibeacon.IBeaconScannerService.Companion.apiCallRunning
@@ -15,9 +14,7 @@ object RemoteHelper {
 
     fun updatePeriodic(context: Context) {
         CoroutineScope(Dispatchers.IO).launch {
-            val db = DatabaseClient.getDatabase(context)
-            val beaconDao = db.beaconDao()
-            val beacons = beaconDao.getAllCachedBeacon()
+            val beacons = LocalHelper.getAllCachedBeacon(context)
             if (beacons.isEmpty()) {
                 apiCallRunning = false
                 return@launch
@@ -41,7 +38,7 @@ object RemoteHelper {
                 )
 
                 if (response.asJsonObject.get("result").asString == "ok") {
-                    beaconDao.setUploaded(toUpload.mac)
+                    LocalHelper.setUploaded(context, toUpload.mac)
                     Log.d("RemoteHelper", "${toUpload.mac} uploaded")
                 }
                 updatePeriodic(context)

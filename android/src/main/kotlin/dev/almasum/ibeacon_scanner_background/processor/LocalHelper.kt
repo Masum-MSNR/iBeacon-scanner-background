@@ -33,7 +33,11 @@ object LocalHelper {
                     System.currentTimeMillis(),
                     0
                 )
-                beaconDao.insert(newBeacon)
+                try {
+                    beaconDao.insert(newBeacon)
+                } catch (e: Exception) {
+                    Log.e("DBHelper", "Error inserting beacon: ${e.message}")
+                }
                 Log.d("DBHelper", "Beacon inserted")
             } else {
                 val currentTime = System.currentTimeMillis()
@@ -47,7 +51,11 @@ object LocalHelper {
                         System.currentTimeMillis(),
                         0
                     )
-                    beaconDao.update(newBeacon)
+                    try {
+                        beaconDao.update(newBeacon)
+                    } catch (e: Exception) {
+                        Log.e("DBHelper", "Error updating beacon: ${e.message}")
+                    }
                     Log.d("DBHelper", "Beacon updated")
                 } else {
                     Log.d("DBHelper", "Beacon ignored")
@@ -67,7 +75,11 @@ object LocalHelper {
         CoroutineScope(Dispatchers.IO).launch {
             val db = DatabaseClient.getDatabase(context)
             val beaconDao = db.beaconDao()
-            beaconDao.setUploaded(mac)
+            try{
+                beaconDao.setUploaded(mac)
+            }catch (e: Exception){
+                Log.e("DBHelper", "Error setting uploaded: ${e.message}")
+            }
         }
     }
 }

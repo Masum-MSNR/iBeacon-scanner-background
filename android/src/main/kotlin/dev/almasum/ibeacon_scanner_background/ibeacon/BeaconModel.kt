@@ -14,6 +14,7 @@ class BeaconModel(mac: String?) {
     var rssi: Int? = null
     var latitude: Double? = null
     var longitude: Double? = null
+    var timestamp: Long? = null
     override fun equals(other: Any?): Boolean {
         if (this === other) return true
         if (other !is BeaconModel) return false

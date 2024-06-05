@@ -36,7 +36,7 @@ class IbeaconScannerBackgroundPlugin : FlutterPlugin, MethodCallHandler,
     private var results = mutableListOf<BeaconModel>()
     private var eventSink: EventChannel.EventSink? = null
 
-    private val filters = arrayOf("dev.almasum.ibeacon_scanner_background.DATA")
+    private val filters = arrayOf("dev.almasum.ibeacon_scanner_background.DATA","dev.almasum.ibeacon_scanner_background.REFRESH")
 
     private val intentFilter: IntentFilter by lazy {
         IntentFilter().apply {
@@ -48,6 +48,11 @@ class IbeaconScannerBackgroundPlugin : FlutterPlugin, MethodCallHandler,
         override fun onReceive(context: Context, intent: Intent) {
             when (intent.action) {
                 "dev.almasum.ibeacon_scanner_background.DATA" -> showData(intent)
+                "dev.almasum.ibeacon_scanner_background.REFRESH" -> {
+                    Log.d("MSNR","ListRefresh")
+                    removeOldResults()
+                    eventSink?.success(results.toString())
+                }
             }
         }
     }
@@ -81,16 +86,32 @@ class IbeaconScannerBackgroundPlugin : FlutterPlugin, MethodCallHandler,
             results[results.indexOf(BeaconModel(mac))].minor = minor?.toInt()
             results[results.indexOf(BeaconModel(mac))].latitude = latitude?.toDouble()
             results[results.indexOf(BeaconModel(mac))].longitude = longitude?.toDouble()
+            results[results.indexOf(BeaconModel(mac))].timestamp = System.currentTimeMillis()
         } else {
             val beacon = BeaconModel(mac)
+            beacon.type = type
+            beacon.macAddress = mac
             beacon.rssi = rssi?.toInt()
             beacon.uuid = uuid
             beacon.major = major?.toInt()
             beacon.minor = minor?.toInt()
+            beacon.latitude = latitude?.toDouble()
+            beacon.longitude = longitude?.toDouble()
+            beacon.timestamp = System.currentTimeMillis()
             results.add(beacon)
         }
+        removeOldResults()
         eventSink?.success(results.toString())
         Log.d("MSNR", "UpdatedResult: $results")
+    }
+
+    private fun removeOldResults() {
+        val currentTime = System.currentTimeMillis()
+        results.removeAll {
+            it.timestamp?.let { timestamp ->
+                currentTime - timestamp > 60000
+            } ?: false
+        }
     }
 
     private lateinit var broadcastReceiver: IbeaconScannerBackgroundPlugin.DataBroadcastReceiver
@@ -102,7 +123,11 @@ class IbeaconScannerBackgroundPlugin : FlutterPlugin, MethodCallHandler,
         context = flutterPluginBinding.applicationContext
         broadcastReceiver = DataBroadcastReceiver()
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-            context.registerReceiver(broadcastReceiver, intentFilter, Context.RECEIVER_NOT_EXPORTED)
+            context.registerReceiver(
+                broadcastReceiver,
+                intentFilter,
+                Context.RECEIVER_NOT_EXPORTED
+            )
         } else {
             context.registerReceiver(broadcastReceiver, intentFilter)
         }
