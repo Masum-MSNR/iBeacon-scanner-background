@@ -1,5 +1,7 @@
 package dev.almasum.ibeacon_scanner_background.ibeacon
 
+import android.os.Build
+import android.content.pm.ServiceInfo
 import android.annotation.SuppressLint
 import android.app.Service
 import android.bluetooth.BluetoothManager
@@ -231,6 +233,11 @@ class IBeaconScannerService : Service() {
                         false,
                         isService = true,
                     ),
+                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+                        ServiceInfo.FOREGROUND_SERVICE_TYPE_SPECIAL_USE
+                    } else {
+                        0
+                    }
                 )
                 val bluetoothAdapter =
                     (applicationContext?.getSystemService(Context.BLUETOOTH_SERVICE) as BluetoothManager).adapter!!
