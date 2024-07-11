@@ -25,38 +25,36 @@ object LocalHelper {
 
             if (beaconEntity == null) {
                 val newBeacon = BeaconEntity(
-                    beaconModel.macAddress!!,
-                    type,
-                    beaconModel.uuid!!,
-                    latitude,
-                    longitude,
-                    System.currentTimeMillis(),
-                    0
+                    mac = beaconModel.macAddress!!,
+                    type = type,
+                    uuid = beaconModel.uuid!!,
+                    latitude = latitude,
+                    longitude = longitude,
+                    timestamp = System.currentTimeMillis(),
                 )
                 try {
                     beaconDao.insert(newBeacon)
+                    Log.d("DBHelper", "Beacon inserted")
                 } catch (e: Exception) {
                     Log.e("DBHelper", "Error inserting beacon: ${e.message}")
                 }
-                Log.d("DBHelper", "Beacon inserted")
             } else {
                 val currentTime = System.currentTimeMillis()
-                if (currentTime - beaconEntity.timestamp > 300000 || beaconEntity.state == 0) {
+                if (currentTime - beaconEntity.timestamp > 300000) {
                     val newBeacon = BeaconEntity(
-                        beaconModel.macAddress!!,
-                        type,
-                        beaconModel.uuid!!,
-                        latitude,
-                        longitude,
-                        System.currentTimeMillis(),
-                        0
+                        mac = beaconModel.macAddress!!,
+                        type = type,
+                        uuid = beaconModel.uuid!!,
+                        latitude = latitude,
+                        longitude = longitude,
+                        timestamp = System.currentTimeMillis(),
                     )
                     try {
-                        beaconDao.update(newBeacon)
+                        beaconDao.insert(newBeacon)
+                        Log.d("DBHelper", "Beacon inserted")
                     } catch (e: Exception) {
-                        Log.e("DBHelper", "Error updating beacon: ${e.message}")
+                        Log.e("DBHelper", "Error inserting beacon: ${e.message}")
                     }
-                    Log.d("DBHelper", "Beacon updated")
                 } else {
                     Log.d("DBHelper", "Beacon ignored")
                 }
@@ -71,14 +69,15 @@ object LocalHelper {
         return beaconDao.getAllCachedBeacon()
     }
 
-    fun setUploaded(context: Context, mac: String) {
+
+    fun deleteBeacon(context: Context, id: Int) {
         CoroutineScope(Dispatchers.IO).launch {
             val db = DatabaseClient.getDatabase(context)
             val beaconDao = db.beaconDao()
-            try{
-                beaconDao.setUploaded(mac)
-            }catch (e: Exception){
-                Log.e("DBHelper", "Error setting uploaded: ${e.message}")
+            try {
+                beaconDao.deleteBeacon(id)
+            } catch (e: Exception) {
+                Log.e("DBHelper", "Error deleting beacon: ${e.message}")
             }
         }
     }

@@ -13,6 +13,8 @@ import kotlinx.coroutines.launch
 object RemoteHelper {
 
     fun updatePeriodic(context: Context) {
+        if(apiCallRunning) return
+        apiCallRunning = true
         CoroutineScope(Dispatchers.IO).launch {
             val beacons = LocalHelper.getAllCachedBeacon(context)
             if (beacons.isEmpty()) {
@@ -38,9 +40,10 @@ object RemoteHelper {
                 )
 
                 if (response.asJsonObject.get("result").asString == "ok") {
-                    LocalHelper.setUploaded(context, toUpload.mac)
-                    Log.d("RemoteHelper", "${toUpload.mac} uploaded")
+                    LocalHelper.deleteBeacon(context, toUpload.id)
+                    Log.d("RemoteHelper", "${toUpload.mac} -> ${toUpload.id} uploaded")
                 }
+                apiCallRunning = false
                 updatePeriodic(context)
             } catch (e: Exception) {
                 apiCallRunning = false
