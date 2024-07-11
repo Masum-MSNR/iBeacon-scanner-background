@@ -38,13 +38,13 @@ object RemoteHelper {
                 val response = WebService.create().postBeacon(
                     requestBody
                 )
-
+                Log.d("RemoteHelper", response.toString())
+                Log.d("RemoteHelper", response.asJsonObject.get("result").toString())
                 if (response.asJsonObject.get("result").asString == "ok") {
-                    LocalHelper.deleteBeacon(context, toUpload.id)
+                    LocalHelper.updateBeacon(context, toUpload.id)
                     Log.d("RemoteHelper", "${toUpload.mac} -> ${toUpload.id} uploaded")
                 }
                 apiCallRunning = false
-                updatePeriodic(context)
             } catch (e: Exception) {
                 apiCallRunning = false
                 Log.e("RemoteHelper", e.message!!)

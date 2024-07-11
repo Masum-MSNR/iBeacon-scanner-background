@@ -12,7 +12,9 @@ object DatabaseClient {
                 context.applicationContext,
                 AppDatabase::class.java,
                 "inv_app"
-            ).build()
+            )
+                .fallbackToDestructiveMigration()
+                .build()
             INSTANCE = instance
             instance
         }

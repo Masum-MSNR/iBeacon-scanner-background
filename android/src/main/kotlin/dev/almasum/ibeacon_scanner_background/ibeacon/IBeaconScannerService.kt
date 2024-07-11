@@ -261,7 +261,6 @@ class IBeaconScannerService : Service() {
                             .build()
                     btScanner!!.startScan(filters, scanSetting, leScanCallback)
                     if (!apiCallRunning) {
-                        apiCallRunning = true
                         RemoteHelper.updatePeriodic(applicationContext)
                     }
                 }

@@ -13,5 +13,5 @@ data class BeaconEntity(
     val latitude: Double,
     val longitude: Double,
     val timestamp: Long,
-//    val state: Int
+    val state: Int
 )

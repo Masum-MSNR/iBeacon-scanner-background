@@ -5,6 +5,7 @@ import android.util.Log
 import dev.almasum.ibeacon_scanner_background.database.local.BeaconEntity
 import dev.almasum.ibeacon_scanner_background.database.local.DatabaseClient
 import dev.almasum.ibeacon_scanner_background.ibeacon.BeaconModel
+import dev.almasum.ibeacon_scanner_background.processor.RemoteHelper.updatePeriodic
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -17,6 +18,7 @@ object LocalHelper {
         latitude: Double,
         longitude: Double
     ) {
+        if(beaconModel.latitude == 0.0 && beaconModel.longitude == 0.0) return
         CoroutineScope(Dispatchers.IO).launch {
             val db = DatabaseClient.getDatabase(context)
 
@@ -31,6 +33,7 @@ object LocalHelper {
                     latitude = latitude,
                     longitude = longitude,
                     timestamp = System.currentTimeMillis(),
+                    state = 0,
                 )
                 try {
                     beaconDao.insert(newBeacon)
@@ -48,6 +51,7 @@ object LocalHelper {
                         latitude = latitude,
                         longitude = longitude,
                         timestamp = System.currentTimeMillis(),
+                        state = 0,
                     )
                     try {
                         beaconDao.insert(newBeacon)
@@ -70,15 +74,16 @@ object LocalHelper {
     }
 
 
-    fun deleteBeacon(context: Context, id: Int) {
+    fun updateBeacon(context: Context, id: Int) {
         CoroutineScope(Dispatchers.IO).launch {
             val db = DatabaseClient.getDatabase(context)
             val beaconDao = db.beaconDao()
             try {
-                beaconDao.deleteBeacon(id)
+                beaconDao.updateBeacon(id)
             } catch (e: Exception) {
                 Log.e("DBHelper", "Error deleting beacon: ${e.message}")
             }
+            updatePeriodic(context)
         }
     }
 }
