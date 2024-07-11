@@ -18,10 +18,9 @@ object LocalHelper {
         latitude: Double,
         longitude: Double
     ) {
-        if(beaconModel.latitude == 0.0 && beaconModel.longitude == 0.0) return
+        if(beaconModel.latitude == 0.0 || beaconModel.longitude == 0.0) return
         CoroutineScope(Dispatchers.IO).launch {
             val db = DatabaseClient.getDatabase(context)
-
             val beaconDao = db.beaconDao()
             val beaconEntity = beaconDao.getBeaconByMac(beaconModel.macAddress!!)
 
